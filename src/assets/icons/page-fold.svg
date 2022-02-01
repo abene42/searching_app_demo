@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="370.28" height="88" viewBox="0 0 370.28 88">
+  <defs>
+    <filter id="page-fold" x="0" y="0" width="370.28" height="88" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-color="#dcdcdc"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g transform="matrix(1, 0, 0, 1, 0, 0)" filter="url(#page-fold)">
+    <path id="page-fold-2" data-name="page-fold" d="M-1577.373,564h-235.254a49.887,49.887,0,0,1-15.8-2.56,49.952,49.952,0,0,1-13.876-7.2,49.953,49.953,0,0,1-10.979-11.131,49.892,49.892,0,0,1-7.112-14.344L-1871.14,494h352.28l-10.742,34.763a49.892,49.892,0,0,1-7.112,14.344,49.952,49.952,0,0,1-10.979,11.131,49.952,49.952,0,0,1-13.876,7.2A49.887,49.887,0,0,1-1577.373,564Z" transform="translate(1880.14 -485)" fill="#fff"/>
+  </g>
+</svg>
