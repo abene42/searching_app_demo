@@ -5,7 +5,7 @@ import {TextFieldRow} from "../../components/custom-text-field/custom-text-field
 import CustomTextField from "../../components/custom-text-field/custom-text-field.component";
 
 
-const CategoryDetail = () => {
+const DetailContent = () => {
     const [rowCount, setRowCount] = useState(1);
 
     const rows = [];
@@ -13,8 +13,8 @@ const CategoryDetail = () => {
     for (let i = 0; i < rowCount; i++) {
         rows.push(
             <TextFieldRow key={i}>
-                <CustomTextField type={'text'} name={'categoryDetailField['+i+']'}/>
-                <CustomTextField type={'text'} name={'categoryDetailValue['+i+']'}/>
+                <CustomTextField type={'text'} name={'detailField['+i+']'}/>
+                <CustomTextField type={'text'} name={'detailValue['+i+']'}/>
             </TextFieldRow>
         );
     }
@@ -37,4 +37,4 @@ const CategoryDetail = () => {
     );
 };
 
-export default CategoryDetail;
+export default DetailContent;

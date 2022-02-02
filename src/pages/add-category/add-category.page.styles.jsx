@@ -67,6 +67,8 @@ export const PageFold = styled.div`
 `;
 
 export const FiltersContainer = styled.div`
+  //background-color: #6a6a6a;
+  padding: ${props => `0px ${props.horizontalPadding}` ?? ''};
   display: flex;
   flex-direction: column;
   align-items: center;
