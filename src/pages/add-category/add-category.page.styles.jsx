@@ -43,7 +43,7 @@ export const RightSection = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  //justify-content: center;
+  justify-content: center;
   flex-direction: column;
 `;
 
@@ -70,7 +70,7 @@ export const FiltersContainer = styled.div`
   //background-color: #6a6a6a;
   padding: ${props => `0px ${props.horizontalPadding}` ?? ''};
   display: flex;
-  flex-direction: column;
+  flex-direction: ${props => props.flexDirection ?? 'column'};
   align-items: center;
   justify-content: flex-start;
   //margin: 100px 0 0 0;

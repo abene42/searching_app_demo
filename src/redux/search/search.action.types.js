@@ -1,0 +1,5 @@
+export const searchActionTypes = {
+    SEARCH_START: 'SEARCH_START',
+    SEARCH_END: 'SEARCH_END',
+    TOGGLE_SEARCHING:'TOGGLE_SEARCHING',
+}

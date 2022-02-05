@@ -7,7 +7,7 @@ export const MessageBoxContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 1px 1px 10px #6a6a6a;
+  box-shadow: 1px 1px 10px #d5d5d5;
   
   p{
     font-size: 14px;
@@ -15,17 +15,16 @@ export const MessageBoxContainer = styled.div`
   }
   
   ${(props) => {
-        if(props.type === 'success' ){
-            return css`
+    if (props.type === 'success') {
+        return css`
               background-color: #329E53;
             `;
-        }else{
-            return css`
-              background-color: #6a6a6a;
+    } else if (props.type === 'error') {
+        return css` 
+              background-color: #fa0000;
             `;
-            
-        }
-  }};
+    }
+}};
   position: absolute;
   bottom: 15px;
   z-index: 100;

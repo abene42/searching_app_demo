@@ -43,7 +43,7 @@ const AddCategoryPage = () => {
         initialRemarkRows.push(
             <RemarkWithRemoveButtonRow key={i}>
                 <CustomTextField type={'text'} width={'680px'} name={'filterRemark[' + i + ']'}/>
-                <RemoveButton/>
+                {/*<RemoveButton/>*/}
             </RemarkWithRemoveButtonRow>
         );
     }
@@ -61,7 +61,7 @@ const AddCategoryPage = () => {
 
     return (
         <Formik
-            initialValues={{categoryDetailField: ['Name']}}
+            initialValues={{detailField: ['Name']}}
             validate={values => {
                 const errors = {};
                 // if (!values.email) {

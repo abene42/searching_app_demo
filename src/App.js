@@ -4,6 +4,7 @@ import AddCategoryPage from "./pages/add-category/add-category.page";
 import {Route, Routes} from "react-router-dom";
 import AddItemPage from "./pages/add-item/add-item.page";
 import Header from "./components/header/header.component";
+import HomePage from "./pages/home/home.page";
 
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
 
         <div>
             <Routes>
-                <Route path="/" element={<div style={homeStyle}><Header/><h1>Home</h1></div>}/>
+                <Route path="/" element={<HomePage/>}/>
                 <Route path="/category" element={<AddCategoryPage/>}/>
                 <Route path="/item" element={<AddItemPage/>}/>
             </Routes>

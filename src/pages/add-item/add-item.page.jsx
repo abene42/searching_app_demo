@@ -21,6 +21,7 @@ import RemoveButton from "../../components/remove-button/remove-button.component
 import CustomButton from "../../components/custom-button/custom-button.component";
 import MessageBox from "../../components/message-box/message-box.component";
 import AddFilterButton from "../../components/add-filter-button/add-filter-button.component";
+import Constants from "../../constants";
 
 const AddItemPage = () => {
 
@@ -39,7 +40,7 @@ const AddItemPage = () => {
         initialValueRows.push(
             <RemarkWithRemoveButtonRow key={i}>
                 <CustomTextField type={'text'} width={'300px'} name={'filterValue[' + i + ']'}/>
-                <RemoveButton/>
+                {/*<RemoveButton/>*/}
             </RemarkWithRemoveButtonRow>
         );
     }
@@ -59,7 +60,27 @@ const AddItemPage = () => {
                 return errors;
             }}
             onSubmit={async (values, {setSubmitting, resetForm}) => {
-                console.log('Form Submitted')
+                // console.log(values)
+                await fetch(Constants.API_URL + '/item/add', {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(values)
+                })
+                    .then(async (response) => {
+                        if(response.status === 200){
+                            setPageMessage({type:'success',message:'Successfully created an Item'})
+                            await new Promise(resolve => setTimeout(resolve, 3000));
+                            setPageMessage({})
+                        }
+                    })
+                    .catch((async (reason) => {
+                        setPageMessage({type:'error',message:'Error: '+reason})
+                        // await new Promise(resolve => setTimeout(resolve, 5000));
+                        // setPageMessage({})
+                    }))
             }}
         >
             {({isSubmitting}) => (

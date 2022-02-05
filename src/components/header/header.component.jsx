@@ -1,26 +1,22 @@
 import React, {useState} from 'react';
 import {HeaderContainer, HeaderLink, HeaderLinksContainer, Logo, LogoContainer} from "./header.styles";
 import logo from '../../assets/icons/logo.svg';
+import {useLocation} from "react-router-dom";
 
 const Header = () => {
-
-    const [activeButtonIndex, setActiveButtonIndex] = useState(1);
-
-    const handleButtonIndexClick = (index) =>  setActiveButtonIndex(index);
-
     return (
         <HeaderContainer>
             <LogoContainer>
                 <Logo alt={'demo'} src={logo}/>
             </LogoContainer>
             <HeaderLinksContainer>
-                <HeaderLink active={activeButtonIndex === 0} onClick={() => handleButtonIndexClick(0)} to={'/'}>
+                <HeaderLink to={'/'}>
                     <p>Home</p>
                 </HeaderLink>
-                <HeaderLink active={activeButtonIndex === 1} onClick={() => handleButtonIndexClick(1)} to={'/item'}>
+                <HeaderLink to={'/item'}>
                     <p>Item</p>
                 </HeaderLink>
-                <HeaderLink active={activeButtonIndex === 2} onClick={() => handleButtonIndexClick(2)} to={'/category'}>
+                <HeaderLink to={'/category'}>
                     <p>Category</p>
                 </HeaderLink>
             </HeaderLinksContainer>

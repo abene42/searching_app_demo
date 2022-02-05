@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components';
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 
 export const HeaderContainer = styled.div`
   //background-color: cadetblue;
@@ -39,7 +39,8 @@ export const HeaderLink = styled(Link)`
   text-decoration: none;
   border-radius: 0 0 10px 10px;
   ${props => {
-    if(props.active){
+    const location = useLocation();
+    if(props.to === location.pathname){
         return css`
             background-color: #3E4E5E;
             p{

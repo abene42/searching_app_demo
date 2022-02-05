@@ -6,14 +6,11 @@ export const PandaCardContainer = styled.div`
   border-radius: 25px;
   background-color: #FFFFFF;
   box-shadow: 5px 5px 50px #F2F2F2;
-  
-  @media screen and (max-width: 990px){
-    width: 300px;
-  }
+  margin:0 20px;
 `;
 
 export const PandaCardTopSection = styled.div`
-  width: 100%;
+  width: 410px;
   height: 80px;
   border-radius: 25px 25px 0 0;
   background-color: #3E4E5E;
@@ -26,7 +23,7 @@ export const PandaCardTopSection = styled.div`
 `;
 
 export const PandaCardBottomSection = styled.div`
-  width: 100%;
+  width: 410px;
   height: 620px;
   border-radius: 0 0 25px 25px;
   background-color: #FFFFFF;
