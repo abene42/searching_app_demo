@@ -8,6 +8,7 @@ export const MessageBoxContainer = styled.div`
   justify-content: center;
   align-items: center;
   box-shadow: 1px 1px 10px #d5d5d5;
+  cursor: pointer;
   
   p{
     font-size: 14px;
@@ -28,5 +29,18 @@ export const MessageBoxContainer = styled.div`
   position: absolute;
   bottom: 15px;
   z-index: 100;
-  left: 45%;
+  left: 45%;  
+`;
+
+export const MessageBoxProgressIndicator = styled.div`
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  
+  img{
+    width: 100%;
+    height: 100%;
+  }
 `;

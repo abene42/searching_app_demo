@@ -54,7 +54,6 @@ const HomePage = () => {
             }}
             onSubmit={async (values, {setSubmitting, resetForm}) => {
                 values.category = searchData.category?.name
-                console.log(values)
                 await fetch(Constants.API_URL + '/item/filter', {
                     method: "POST",
                     headers: {
@@ -114,7 +113,6 @@ const HomePage = () => {
                                             <div>
                                                 <HorizontalDivider/>
                                                 <SaveAndCancelSection>
-                                                    <CustomButton text={'Clear'} type='button'/>
                                                     <CustomButton disabled={isSubmitting} type='submit' text={'Filter'}
                                                                   backgroundColor={'#0884FF'} fontColor={'#FFFFFF'}/>
                                                 </SaveAndCancelSection>
@@ -123,17 +121,24 @@ const HomePage = () => {
                                     </SearchFiltersContainer>
                                     <div>
                                         {
-                                            filteredItems?.map((item) =>{
-                                                return <FilteredItemContainer>
+                                            filteredItems?.map((item,index) =>{
+                                                return <FilteredItemContainer key={index}>
                                                     {
                                                         Object.entries(item)
-                                                            .filter(([key,value])=> key !== 'filters')
+                                                            .filter(([key,value])=> key!=='_id' && key !== 'created_at' && key !== 'updated_at')
                                                             .map(([key,value],index) => {
                                                                 // console.log(value,' <=> ',key)
-                                                                return <div key={index}>
+                                                                return key !== 'filters'
+                                                                ?<div key={index}>
                                                                     <label>{key}: </label>
                                                                     <p>{value}</p>
                                                                 </div>
+                                                                : Object.entries(value).map(([filterName,filterValue])=>{
+                                                                       return <div key={index}>
+                                                                            <label>{filterName}: </label>
+                                                                            <p>{filterValue}</p>
+                                                                        </div>
+                                                                    })
                                                             })
                                                     }
                                                 </FilteredItemContainer>

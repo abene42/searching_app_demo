@@ -51,6 +51,8 @@ export const SearchCardSearchBarBorder = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   
   p{
     font-size: 24px;
@@ -113,6 +115,10 @@ export const SearchSuggestionButton = styled.div`
     font-size: 25px;
     font-weight: 400;
     color: #3E4E5E;
+    
+    &:first-letter {
+      text-transform:capitalize;
+    }
   }
   
   &:hover{

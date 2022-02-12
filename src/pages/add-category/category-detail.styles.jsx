@@ -23,3 +23,37 @@ export const CategoryDetailHeader = styled.div`
     color: #3E4E5E;
   }
 `;
+
+export const CategoryNameContainer = styled.div`
+  //background-color: lightpink;
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: column;
+  margin: 10px 5px;
+  
+  p{
+    font-size: 18px;
+    color: #3E4E5E;
+    font-weight: 400;
+  }
+`;
+
+export const CategorySelect = styled.select`
+  border-radius: 3px;
+  width: 230px;
+  font-size: 18px;
+  font-weight: 200;
+  color: #3E4E5E;
+  text-align: start;
+  outline: solid 1px rgba(62,78,94,0.62);
+  border:none;
+  padding: 5px 5px 5px 10px;
+  text-transform: capitalize;
+  
+  option{
+    text-transform: capitalize;
+  }
+`;

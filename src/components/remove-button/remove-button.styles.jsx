@@ -9,9 +9,18 @@ export const RemoveButtonContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin: 0 5px;
+  cursor:pointer;
   
   p{
     color: #3E4E5E;
     font-size: 16px;
+  }
+  
+  &:hover{
+    background-color: red;
+    
+    p{
+      color: white;
+    }
   }
 `;

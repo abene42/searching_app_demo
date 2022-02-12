@@ -4,7 +4,7 @@ import {AddPageContainer} from "../../pages/add-category/add-category.page.style
 import {AddButtonContainer} from "./add-button.styles";
 
 const AddButton = ({color, ...otherProps}) => (
-    <AddButtonContainer color={color} {...otherProps}>
+    <AddButtonContainer type={'button'} color={color} {...otherProps}>
         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11">
             <g id="plus_icon" transform="translate(0.5 0.5)">
                 <path id="Path_3" data-name="Path 3" d="M18,7.5v10" transform="translate(-13 -7.5)" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1"/>

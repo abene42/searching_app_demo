@@ -42,6 +42,7 @@ export const FilteredItemContainer = styled.div`
     color: #3E4E5E;
     text-align: right;
     font-weight: bold;
+    text-transform:capitalize;
   }
   
   p{
@@ -49,6 +50,7 @@ export const FilteredItemContainer = styled.div`
     display: inline;
     color: #3E4E5E;
     text-align: left;
+    text-transform:capitalize;
   }
 `;
 

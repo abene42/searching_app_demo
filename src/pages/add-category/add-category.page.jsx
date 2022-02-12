@@ -20,17 +20,23 @@ import DetailContent from "./category-detail.component";
 import AddFilterButton from "../../components/add-filter-button/add-filter-button.component";
 import CustomScroll from "react-custom-scroll";
 import CustomTextField from "../../components/custom-text-field/custom-text-field.component";
-import RemoveButton from "../../components/remove-button/remove-button.component";
 import CustomButton from "../../components/custom-button/custom-button.component";
 import '/node_modules/react-custom-scroll/dist/customScroll.css';
 import {Form, Formik} from "formik";
-import Constants from "../../constants";
 import MessageBox from "../../components/message-box/message-box.component";
+import Constants from "../../constants";
+import {createStructuredSelector} from "reselect";
+import {selectMessage} from "../../redux/page-message/page-message.selectors";
+import {connect} from "react-redux";
+import {
+    hideLoadingAnimation,
+    showLoadingAnimation,
+    showPageMessage
+} from "../../redux/page-message/page-message.actions";
 
-const AddCategoryPage = () => {
-
+const AddCategoryPage = ({pageMessage, setPageMessage, showLoadingAnimation, hideLoadingAnimation}) => {
     const [filterRowCount, setFilterRowCount] = useState(1);
-    const [pageMessage, setPageMessage] = useState({});
+    const [rowCount, setRowCount] = useState(0);
 
     const initialFilterNameRows = [];
     const initialRemarkRows = [];
@@ -48,32 +54,34 @@ const AddCategoryPage = () => {
         );
     }
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-
-        await fetch('http://localhost:8000/api/test', {
-            method: "POST",
-        })
-            .then((response) => response.json())
-            .then((jsonResponse) => console.log(jsonResponse.text))
-            .catch((reason => console.error(reason)))
+    const handleClearForm = (resetForm) => {
+        resetForm();
+        setFilterRowCount(1);
+        setRowCount(0);
     }
 
     return (
         <Formik
-            initialValues={{detailField: ['Name']}}
-            validate={values => {
-                const errors = {};
-                // if (!values.email) {
-                //     errors.email = 'Required';
-                // } else if (
-                //     !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-                // ) {
-                //     errors.email = 'Invalid email address';
-                // }
-                return errors;
-            }}
+            initialValues={{detailField: [''], detailValue: [''], filterName: [''], filterRemark: [''], name: ''}}
+            // validate={
+            //     (values) => {
+            //         const errors = {};
+            //         if (!values.name) {
+            //             errors.name = 'Name of the item is required';
+            //         }
+            //         if (values.detailField.length !== values.detailValue.length) {
+            //             errors.fieldsLength = 'The number of filled detail fields and values should be the same';
+            //         }
+            //         if (values.filterName.length !== values.filterRemark.length) {
+            //             errors.fieldsLength = 'The number of filled filter fields and values should be the same';
+            //         }
+            //         console.error(errors)
+            //         return errors;
+            //     }
+            // }
             onSubmit={async (values, {setSubmitting, resetForm}) => {
+                console.log(values)
+                showLoadingAnimation();
                 await fetch(Constants.API_URL + '/category/add', {
                     method: "POST",
                     headers: {
@@ -83,15 +91,17 @@ const AddCategoryPage = () => {
                     body: JSON.stringify(values)
                 })
                     .then(async (response) => {
-                        if(response.status === 200){
-                            console.log(response.body)
-                            setPageMessage({type:'success',message:'Successfully created a category'})
-                            resetForm();
-                            await new Promise(resolve => setTimeout(resolve, 3000));
-                            setPageMessage({})
+                        if (response.status === 200) {
+                            response.json().then(async (jsonResponse) => console.log(jsonResponse))
+                            setPageMessage({type: 'success', message: 'Successfully created a category'});
+                        } else if (response.status === 422) {
+                            response.json().then(async (jsonResponse) => {
+                                setPageMessage({type: 'error', message: Object.entries(jsonResponse.errors)[0][1][0]});
+                            });
                         }
                     })
-                    .catch((reason => console.error(reason)))
+                    .catch((reason => setPageMessage({type: 'error', message: 'Error: ' + reason})))
+                    .finally(() => hideLoadingAnimation())
             }}
         >
             {({isSubmitting}) => (
@@ -103,7 +113,8 @@ const AddCategoryPage = () => {
                                 <PageTitle>
                                     <p>Add Category</p>
                                 </PageTitle>
-                                <PandaCard titleElement={'Category Detail'} content={<DetailContent/>}/>
+                                <PandaCard titleElement={'Category Detail'}
+                                           content={<DetailContent rowCount={rowCount} setRowCount={setRowCount}/>}/>
                             </LeftSectionContent>
                         </LeftSection>
                         <RightSection>
@@ -131,15 +142,13 @@ const AddCategoryPage = () => {
                             </CustomScroll>
                             <HorizontalDivider/>
                             <SaveAndCancelSection>
-                                <CustomButton text={'Clear'} type='button'/>
+
                                 <CustomButton disabled={isSubmitting} type='submit' text={'Save'}
                                               backgroundColor={'#0884FF'} fontColor={'#FFFFFF'}/>
                                 {/*<SaveButton/>*/}
                             </SaveAndCancelSection>
                         </RightSection>
-                        {
-                            Object.keys(pageMessage).length > 0 ? <MessageBox message={pageMessage.message} type={pageMessage.type}/> : ''
-                        }
+                        <MessageBox/>
                     </AddPageContainer>
                 </Form>
             )}
@@ -147,4 +156,14 @@ const AddCategoryPage = () => {
     );
 }
 
-export default AddCategoryPage;
+const mapStateToProps = createStructuredSelector({
+    pageMessage: selectMessage
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    setPageMessage: (message) => dispatch(showPageMessage(message)),
+    showLoadingAnimation: () => dispatch(showLoadingAnimation()),
+    hideLoadingAnimation: () => dispatch(hideLoadingAnimation())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddCategoryPage);
