@@ -63,22 +63,6 @@ const AddCategoryPage = ({pageMessage, setPageMessage, showLoadingAnimation, hid
     return (
         <Formik
             initialValues={{detailField: [''], detailValue: [''], filterName: [''], filterRemark: [''], name: ''}}
-            // validate={
-            //     (values) => {
-            //         const errors = {};
-            //         if (!values.name) {
-            //             errors.name = 'Name of the item is required';
-            //         }
-            //         if (values.detailField.length !== values.detailValue.length) {
-            //             errors.fieldsLength = 'The number of filled detail fields and values should be the same';
-            //         }
-            //         if (values.filterName.length !== values.filterRemark.length) {
-            //             errors.fieldsLength = 'The number of filled filter fields and values should be the same';
-            //         }
-            //         console.error(errors)
-            //         return errors;
-            //     }
-            // }
             onSubmit={async (values, {setSubmitting, resetForm}) => {
                 console.log(values)
                 showLoadingAnimation();

@@ -106,7 +106,7 @@ const HomePage = () => {
                                                                              width={'300px'}/>
                                                         </FilterEnteringRow>
                                                     ) :
-                                                <NoDataText text={'Choose a category and the filters wil appear here'}/>
+                                                <NoDataText text={'Choose a category and the filters will appear here'}/>
                                         }
                                         {
                                             searchData?.category?.filters &&
