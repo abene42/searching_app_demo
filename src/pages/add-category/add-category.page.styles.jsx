@@ -87,6 +87,7 @@ const FilterColumnsCommonCss = css`
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 250px;
   margin: 0 15px;
   p{
     color: #3E4E5E;

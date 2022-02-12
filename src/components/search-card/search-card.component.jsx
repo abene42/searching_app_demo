@@ -8,13 +8,14 @@ import {
 } from "./search-card.styles";
 import LoadingAnimation from "../loading-animation/loading-animation.component";
 import NoDataText from "../no-data/no-data.component";
+import {Field} from "formik";
 
-const SearchCard = ({searchApi, setSearchData}) => {
+const SearchCard = ({searchApi, setSearchData, values,setFieldValue}) => {
     const searchField = useRef(null);
     const [searchStarted, setSearchStarted] = useState(false);
 
     const handleOnChange = (changeEvent) => {
-        setSearchData((prevState) => ({...prevState,name:changeEvent.target.value}))
+        setSearchData((prevState) => ({...prevState, name: changeEvent.target.value}))
         if (changeEvent.target.value.length > 1) {
             setSearchStarted(true);
             searchApi.request()
@@ -25,9 +26,11 @@ const SearchCard = ({searchApi, setSearchData}) => {
 
     const handleSuggestionButtonOnClick = (clickEvent) => {
         let category = JSON.parse(clickEvent.currentTarget.getAttribute('data'));
-        // console.log(JSON.parse(category))
-        setSearchData((prevState)=> ({...prevState,category: category}));
+        let filterFields = Object.entries(category.filters).map(([name,description],index)=> ({name:name,value:''}))
+        // setSearchData((prevState) => ({...prevState, category: category}));
         searchField.current.value = category.name
+        setFieldValue('category',category._id)
+        setFieldValue('filterFields',filterFields)
         setSearchStarted(false)
     }
 
@@ -38,7 +41,7 @@ const SearchCard = ({searchApi, setSearchData}) => {
             </SearchCardTitle>
             <SearchCardSearchBarBorder searchStarted={searchStarted}>
                 <SearchCardSearchBar type={'text'} searchStarted={searchStarted}>
-                    <input type={'text'} ref={searchField}
+                    <input autoComplete="off" name={'category'} type={'text'} ref={searchField} onFocus={(event)=> event.preventDefault()}
                            onChange={(changeEvent) => handleOnChange(changeEvent)}/>
                     {/*<SearchLogoContainer>*/}
                     {/*    <img src={searchLogo} alt={'search'}/>*/}
@@ -49,14 +52,14 @@ const SearchCard = ({searchApi, setSearchData}) => {
                         ? <LoadingAnimation/>
                         : (searchApi.data?.length > 0
                         ? searchApi.data.map((searchData) => {
-                            return searchData ?(
+                            return searchData ? (
                                 <SearchSuggestionButton
                                     key={searchData._id}
                                     data={JSON.stringify(searchData)}
                                     onClick={handleSuggestionButtonOnClick}>
                                     <p>{searchData.name}</p>
                                 </SearchSuggestionButton>
-                            ):''
+                            ) : ''
                         }) : <NoDataText/>)
                 }
             </SearchCardSearchBarBorder>

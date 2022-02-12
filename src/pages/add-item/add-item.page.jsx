@@ -13,13 +13,12 @@ import {
     RightSection,
     SaveAndCancelSection
 } from "../add-category/add-category.page.styles";
-import {Form, Formik} from "formik";
+import {FieldArray, Form, Formik} from "formik";
 import Header from "../../components/header/header.component";
 import {PageTitle} from "../../components/page-title/page-title.styles";
 import PandaCard from "../../components/panda-card/panda-card.component";
 import CustomScroll from "react-custom-scroll";
 import DetailContent from "../add-category/category-detail.component";
-import CustomTextField from "../../components/custom-text-field/custom-text-field.component";
 import CustomButton from "../../components/custom-button/custom-button.component";
 import MessageBox from "../../components/message-box/message-box.component";
 import Constants from "../../constants";
@@ -30,13 +29,11 @@ import {
     showPageMessage
 } from "../../redux/page-message/page-message.actions";
 import NoDataText from "../../components/no-data/no-data.component";
+import CustomTextField from "../../components/custom-text-field/custom-text-field.component";
 
 const AddItemPage = ({showLoadingAnimation, hideLoadingAnimation, setPageMessage}) => {
 
     //States
-    const [filterRowCount, setFilterRowCount] = useState(1);
-    const [filterInputList, setFilterInputList] = useState([]);
-    const [rowCount, setRowCount] = useState(0);
     const [categoryList, setCategoriesList] = useState([]);
 
     useEffect(() => {
@@ -55,52 +52,47 @@ const AddItemPage = ({showLoadingAnimation, hideLoadingAnimation, setPageMessage
         getCategories();
     }, []);
 
-
-    const handleRemoveClick = (index) => {
-        // console.log('remove')
-        const list = [...filterInputList];
-        list.splice(index, 1);
-        setFilterInputList(list);
-    };
+    const handleSubmit = async (values, {resetForm, setValues}) => {
+        console.log(values)
+        showLoadingAnimation();
+        await fetch(Constants.API_URL + '/item/add', {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(values)
+        })
+            .then(async (response) => {
+                if (response.status === 200) {
+                    setPageMessage({type: 'success', message: 'Successfully created an Item'})
+                    resetForm();
+                } else if (response.status === 422) {
+                    response.json().then(async (jsonResponse) => {
+                        setPageMessage({
+                            type: 'error',
+                            message: 'Validation: ' + Object.entries(jsonResponse.errors)[0][1][0]
+                        });
+                    });
+                }
+            })
+            .catch((async (reason) => {
+                setPageMessage({type: 'error', message: 'Error: ' + reason})
+            }))
+            .finally(() => hideLoadingAnimation())
+    }
 
     return (
         <Formik
-            enableReinitialize={true}
-            initialValues={{detailField: [''], detailValue: [''], category: ''}}
-            onSubmit={async (values, {setSubmitting, resetForm,setValues}) => {
-                console.log(values)
-                showLoadingAnimation();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                await fetch(Constants.API_URL + '/item/add', {
-                    method: "POST",
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(values)
-                })
-                    .then(async (response) => {
-                        if (response.status === 200) {
-                            setPageMessage({type: 'success', message: 'Successfully created an Item'})
-                            setFilterInputList([]);
-                            resetForm();
-                            setValues({})
-                        } else if (response.status === 422) {
-                            response.json().then(async (jsonResponse) => {
-                                setPageMessage({
-                                    type: 'error',
-                                    message: 'Validation: ' + Object.entries(jsonResponse.errors)[0][1][0]
-                                });
-                            });
-                        }
-                    })
-                    .catch((async (reason) => {
-                        setPageMessage({type: 'error', message: 'Error: ' + reason})
-                    }))
-                    .finally(() => hideLoadingAnimation())
+            initialValues={{
+                name: '',
+                detailFields: [{name: '', value: ''}],
+                filterFields: [{name: '', value: ''}],
+                category: ''
             }}
+            onSubmit={handleSubmit}
         >
-            {({isSubmitting, values, setValues, setFieldValue}) => (
+            {({isSubmitting, values, setFieldValue, resetForm}) => (
                 <Form>
                     <AddPageContainer>
                         <LeftSection>
@@ -109,12 +101,26 @@ const AddItemPage = ({showLoadingAnimation, hideLoadingAnimation, setPageMessage
                                 <PageTitle>
                                     <p>Add Item</p>
                                 </PageTitle>
-                                <PandaCard titleElement={'Item Detail'}
-                                           content={<DetailContent values={values} setValues={setValues}
-                                                                   setFilterInputList={setFilterInputList}
-                                                                   categoryList={categoryList} forPage={'item'}
-                                                                   rowCount={rowCount}
-                                                                   setRowCount={setRowCount}/>}/>
+                                <FieldArray name={'detailFields'}>
+                                    {
+                                        ({push, remove}) => (
+                                            // <PandaCard titleElement={'Item Detail'}
+                                            //            content={<DetailContent values={values} setValues={setValues}
+                                            //                                    setFilterInputList={setFilterInputList}
+                                            //                                    categoryList={categoryList} forPage={'item'}
+                                            //                                    rowCount={rowCount}
+                                            //                                    setRowCount={setRowCount}/>}/>
+                                            <PandaCard titleElement={'Item Detail'}
+                                                       content={<DetailContent {...{
+                                                           values,
+                                                           push,
+                                                           remove,
+                                                           categoryList,
+                                                           setFieldValue
+                                                       }} forPage={'item'}/>}/>
+                                        )
+                                    }
+                                </FieldArray>
                             </LeftSectionContent>
                         </LeftSection>
                         <RightSection>
@@ -122,40 +128,47 @@ const AddItemPage = ({showLoadingAnimation, hideLoadingAnimation, setPageMessage
                                 <p>Add Filters</p>
                             </PageFold>
                             {
-                                filterInputList.length > 0
+                                // console.log(values.filterFields)
+                                values.filterFields.length > 0 && values.filterFields[0].name
                                     ? <div>
                                         <CustomScroll>
                                             <FiltersContainer>
                                                 <FilterContainerBody>
-                                                    <FilterNameColumn>
-                                                        <p>Filter Name</p>
+                                                    <FieldArray name={'filterFields'}>
                                                         {
-                                                            filterInputList.map((input, index) => {
-                                                                let filterName = input.toUpperCase()
-                                                                return (
-                                                                    <CustomTextField name={`filterName[${index}]`}
-                                                                                     type={'text'} key={index}
-                                                                                     value={filterName} disabled/>
-                                                                )
-                                                            })
+                                                            ({remove}) => (
+                                                                <>
+                                                                    <FilterNameColumn>
+                                                                        <p>Filter Name</p>
+                                                                        {
+                                                                            values.filterFields && values.filterFields?.map((input, index) => {
+                                                                                let filterName = input.name.toUpperCase()
+                                                                                return (
+                                                                                    <CustomTextField
+                                                                                        name={`filterFields.${index}.name`}
+                                                                                        key={index}
+                                                                                        value={filterName} disabled/>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </FilterNameColumn>
+                                                                    <RemarkColumn>
+                                                                        <p>Value</p>
+                                                                        {
+                                                                            values.filterFields && values.filterFields?.map((input, index) => {
+                                                                                return (
+                                                                                    <RemarkWithRemoveButtonRow key={index}>
+                                                                                        <CustomTextField type={'text'}
+                                                                                                         name={`filterFields.${index}.value`}/>
+                                                                                    </RemarkWithRemoveButtonRow>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </RemarkColumn>
+                                                                </>
+                                                            )
                                                         }
-                                                    </FilterNameColumn>
-                                                    <RemarkColumn>
-                                                        <p>Value</p>
-                                                        {/*{*/}
-                                                        {/*    initialValueRows.map((row) => row)*/}
-                                                        {/*}*/}
-                                                        {
-                                                            filterInputList.map((input, index) => {
-                                                                return (
-                                                                    <RemarkWithRemoveButtonRow key={index}>
-                                                                        <CustomTextField type={'text'}
-                                                                                         name={`filterValue[${index}]`}/>
-                                                                    </RemarkWithRemoveButtonRow>
-                                                                )
-                                                            })
-                                                        }
-                                                    </RemarkColumn>
+                                                    </FieldArray>
                                                 </FilterContainerBody>
                                                 {/*<AddFilterButton onClick={() => setFilterInputList([...filterInputList, {*/}
                                                 {/*    filterName: [''],*/}
@@ -165,8 +178,12 @@ const AddItemPage = ({showLoadingAnimation, hideLoadingAnimation, setPageMessage
                                         </CustomScroll>
                                         <HorizontalDivider/>
                                         <SaveAndCancelSection>
-
-                                            <CustomButton disabled={isSubmitting} type='submit' text={'Save'}
+                                            <CustomButton disabled={isSubmitting} type='button'
+                                                          onClick={() => resetForm()}
+                                                          text={'Clear'}
+                                                          backgroundColor={'#F2F2F2'}
+                                                          fontColor={'#3E4E5E'}/>
+                                            <CustomButton type='submit' text={'Save'}
                                                           backgroundColor={'#0884FF'} fontColor={'#FFFFFF'}/>
                                             {/*<SaveButton/>*/}
                                         </SaveAndCancelSection>

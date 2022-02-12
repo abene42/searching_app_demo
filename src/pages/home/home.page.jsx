@@ -25,8 +25,14 @@ import CustomButton from "../../components/custom-button/custom-button.component
 import Header from "../../components/header/header.component";
 import {PageTitle} from "../../components/page-title/page-title.styles";
 import SearchCard from "../../components/search-card/search-card.component";
+import {
+    hideLoadingAnimation,
+    showLoadingAnimation,
+    showPageMessage
+} from "../../redux/page-message/page-message.actions";
+import {connect} from "react-redux";
 
-const HomePage = () => {
+const HomePage = ({setPageMessage, showLoadingAnimation, hideLoadingAnimation}) => {
 
     // State Hooks
     const [searchData, setSearchData] = useState({});
@@ -38,46 +44,35 @@ const HomePage = () => {
     }, [searchData])
     const categoryApi = useApi(() => getCategoriesApi.searchCategoryByName(searchData));
 
+    const handleSubmit = async (values) => {
+        // values.category = searchData.category?.name
+        await fetch(Constants.API_URL + '/item/filter', {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(values)
+        })
+            .then(async (response) => {
+                if (response.status === 200) {
+                    response.json().then((jsonResponse) => {
+                        setFilteredItems(jsonResponse)
+                    })
+                }
+            })
+            .catch((async (reason) => {
+                setPageMessage({type: 'error', message: 'Error: ' + reason})
+            }))
+    }
+
     return (
         <Formik
-            initialValues={{}}
-            validate={values => {
-                const errors = {};
-                // if (!values.email) {
-                //     errors.email = 'Required';
-                // } else if (
-                //     !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-                // ) {
-                //     errors.email = 'Invalid email address';
-                // }
-                return errors;
-            }}
-            onSubmit={async (values, {setSubmitting, resetForm}) => {
-                values.category = searchData.category?.name
-                await fetch(Constants.API_URL + '/item/filter', {
-                    method: "POST",
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(values)
-                })
-                    .then(async (response) => {
-                        if (response.status === 200) {
-                            response.json().then((jsonResponse) => {
-                                setFilteredItems(jsonResponse)
-                            })
-                        }
-                    })
-                    .catch((async (reason) => {
-                        // setPageMessage({type: 'error', message: 'Error: ' + reason})
-                        // await new Promise(resolve => setTimeout(resolve, 5000));
-                        // setPageMessage({})
-                    }))
-            }}
+            initialValues={{filterFields:[{name:'',value:''}], category:''}}
+            onSubmit={handleSubmit}
         >
             {
-                ({isSubmitting}) => (
+                ({isSubmitting,values,setFieldValue}) => (
                     <Form>
                         <AddPageContainer>
                             <LeftSection>
@@ -86,7 +81,7 @@ const HomePage = () => {
                                     <PageTitle>
                                         <p>Search</p>
                                     </PageTitle>
-                                    <SearchCard title={'Search by category'} setSearchData={setSearchData}
+                                    <SearchCard title={'Search by category'} {...{values,setFieldValue,setSearchData}}
                                                 searchApi={categoryApi}/>
                                 </LeftSectionContent>
                             </LeftSection>
@@ -97,19 +92,18 @@ const HomePage = () => {
                                 <FilterAndResultItemContainer>
                                     <SearchFiltersContainer flexDirection={'row'}>
                                         {
-                                            searchData?.category?.filters ?
-                                                Object.entries(searchData?.category?.filters)
-                                                    .map(([filter, desc], index) =>
+                                            values.filterFields && values.filterFields[0].name ?
+                                                values.filterFields.map((field, index) =>
                                                         <FilterEnteringRow key={index}>
-                                                            <p>{filter}</p>
-                                                            <CustomTextField name={'filteringValue[' + filter + ']'}
+                                                            <p>{field.name}</p>
+                                                            <CustomTextField name={`filterFields.${index}.value`}
                                                                              width={'300px'}/>
                                                         </FilterEnteringRow>
                                                     ) :
                                                 <NoDataText text={'Choose a category and the filters will appear here'}/>
                                         }
                                         {
-                                            searchData?.category?.filters &&
+                                            values.filterFields && values.filterFields[0].name &&
                                             <div>
                                                 <HorizontalDivider/>
                                                 <SaveAndCancelSection>
@@ -121,10 +115,10 @@ const HomePage = () => {
                                     </SearchFiltersContainer>
                                     <div>
                                         {
-                                            filteredItems?.map((item,index) =>{
+                                            filteredItems && filteredItems?.map((item,index) =>{
                                                 return <FilteredItemContainer key={index}>
                                                     {
-                                                        Object.entries(item)
+                                                        Object.entries(item.filters)
                                                             .filter(([key,value])=> key!=='_id' && key !== 'created_at' && key !== 'updated_at')
                                                             .map(([key,value],index) => {
                                                                 // console.log(value,' <=> ',key)
@@ -158,4 +152,10 @@ const HomePage = () => {
     );
 }
 
-export default HomePage;
+const mapDispatchToProps = (dispatch) => ({
+    setPageMessage: (message) => dispatch(showPageMessage(message)),
+    showLoadingAnimation: () => dispatch(showLoadingAnimation()),
+    hideLoadingAnimation: () => dispatch(hideLoadingAnimation()),
+})
+
+export default connect(null, mapDispatchToProps)(HomePage);
